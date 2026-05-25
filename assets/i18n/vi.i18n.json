@@ -1,0 +1,23 @@
+{
+  "common": {
+    "ok": "Đồng ý",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "retry": "Thử lại",
+    "add": "Thêm mới"
+  },
+  "splash": {
+    "app_name": "Calculator AI",
+    "loading": "Đang tải dữ liệu..."
+  },
+  "calculator": {
+    "tab_recent": "Gần đây",
+    "tab_converter": "Quy đổi",
+    "tab_calculator": "Máy tính",
+    "tab_settings": "Cài đặt",
+    "error_generic": "Lỗi",
+    "error_divide_by_zero": "Không thể chia cho 0",
+    "coming_soon": "Sắp ra mắt"
+  }
+}

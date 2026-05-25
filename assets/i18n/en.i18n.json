@@ -1,0 +1,23 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "retry": "Retry",
+    "add": "Add"
+  },
+  "splash": {
+    "app_name": "Calculator AI",
+    "loading": "Loading data..."
+  },
+  "calculator": {
+    "tab_recent": "Recent",
+    "tab_converter": "Converter",
+    "tab_calculator": "Calculator",
+    "tab_settings": "Settings",
+    "error_generic": "Error",
+    "error_divide_by_zero": "Cannot divide by zero",
+    "coming_soon": "Coming soon"
+  }
+}

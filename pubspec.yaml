@@ -1,0 +1,117 @@
+name: calculator
+description: "Simple calculator app"
+# Ngăn việc publish lên pub.dev
+publish_to: 'none'
+
+# Phiên bản ứng dụng
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Icon chuẩn của iOS
+  cupertino_icons: ^1.0.9
+
+  # --- NETWORK & API ---
+  dio: ^5.9.2 # HTTP client mạnh mẽ cho Dart/Flutter
+  retrofit: ^4.4.0 # REST client (kiểu Retrofit trong Android) dùng kèm với dio
+
+  # --- STATE MANAGEMENT & DI ---
+  flutter_riverpod: ^3.3.1 # Quản lý trạng thái (State Management) và Dependency Injection
+  riverpod_annotation: ^4.0.2 # Các chú thích (annotations) để sinh code cho Riverpod
+
+  # --- NAVIGATION ---
+  auto_route: ^11.1.0 # Giải pháp điều hướng (Routing) mạnh mẽ theo cơ chế Annotation
+
+  # --- LOCAL STORAGE ---
+  shared_preferences: ^2.5.5 # Lưu trữ dữ liệu đơn giản (Key-Value)
+  sqflite: ^2.4.2+1 # Cơ sở dữ liệu SQLite cho Flutter
+  path: ^1.9.1 # Xử lý đường dẫn file một cách thống nhất
+
+  # --- UTILITIES ---
+  intl: ^0.20.2 # Hỗ trợ định dạng ngày tháng, con số, tiền tệ
+  equatable: ^2.0.8 # Hỗ trợ so sánh các đối tượng bằng giá trị thay vì tham chiếu
+  json_annotation: ^4.11.0 # Các chú thích để tự động hóa việc parse JSON
+
+  # --- UI COMPONENTS ---
+  flutter_spinkit: ^5.2.2 # Tập hợp các hiệu ứng loading đẹp mắt
+
+  #--- UI Splash & Media ---
+  flutter_native_splash: ^2.4.7 # Tạo màn hình splash screen (native) cho Android/iOS
+  image_picker: ^1.2.2 # Chọn ảnh từ thư viện hoặc camera
+
+  # --- I18N (ĐA NGÔN NGỮ) ---
+  slang: ^4.14.0 # Giải pháp đa ngôn ngữ hiện đại, kiểu an toàn (type-safe)
+  slang_flutter: ^4.14.0 # Slang dành riêng cho Flutter
+  flutter_localizations: # Các gói bản địa hóa mặc định của Flutter
+    sdk: flutter
+
+  # --- FONTS / SVG / MEDIA ---
+  flutter_svg: ^2.3.0 # Hiển thị ảnh vector định dạng SVG
+  audioplayers: ^6.6.0 # Phát nhạc và âm thanh
+  video_player: ^2.11.1 # Plugin phát video cơ bản
+  chewie: ^1.14.0 # Giao diện trình phát video (Video Player UI) hoàn thiện hơn
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0 # Các quy tắc kiểm tra code (linting) để code chuẩn hơn
+
+  # --- CODE GENERATION (CÔNG CỤ SINH CODE) ---
+  auto_route_generator: ^10.4.0 # Sinh code cho hệ thống điều hướng AutoRoute
+  build_runner: ^2.15.0 # Công cụ chạy các generator (cực kỳ quan trọng)
+  riverpod_generator: ^4.0.3 # Sinh code cho Riverpod (Providers)
+  json_serializable: ^6.13.0 # Sinh code xử lý parse JSON tự động
+  retrofit_generator: ^10.2.6 # Sinh code cho API client (Retrofit)
+  flutter_gen_runner: ^5.14.1 # Sinh code để truy cập Assets/Fonts kiểu an toàn (Assets.images...)
+  slang_build_runner: ^4.14.0 # Sinh code cho đa ngôn ngữ (Slang)
+  flutter_launcher_icons: ^0.14.4 # Tự động tạo app icons từ ảnh gốc
+
+# --- CẤU HÌNH ICON ---
+flutter_launcher_icons:
+  android: true # Sẽ tạo ra file ic_launcher.png (chuẩn Android)
+  ios: true
+  image_path: "assets/images/ic_launcher.png"
+  adaptive_icon_background: "assets/images/ic_launcher_background.png"
+  adaptive_icon_foreground: "assets/images/ic_launcher_foreground.png"
+  min_sdk_android: 21
+
+# --- CẤU HÌNH FLUTTER_GEN ---
+flutter_gen:
+  output: lib/gen/
+  line_length: 80
+  assets:
+    enabled: true
+  fonts:
+    enabled: true
+  integrations:
+    flutter_svg: true
+
+# --- CẤU HÌNH SLANG ---
+slang:
+  base_locale: vi
+  input_directory: assets/i18n
+  output_file_name: strings.g.dart
+
+# --- CẤU HÌNH SPLASH SCREEN ---
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/ic_launcher.png
+  background_image: assets/images/bg_splash.jpg
+  android: true
+  ios: true
+  android_12:
+    # Gỡ bỏ dòng image để hệ thống tự lấy App Icon chuẩn
+    icon_background_color: "#ffffff"
+    color: "#ffffff"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/i18n/
+    - assets/svg/
