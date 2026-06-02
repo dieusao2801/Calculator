@@ -1,0 +1,47 @@
+/// Các hằng số kích thước / khoảng cách / bán kính toàn app.
+class AppDimens {
+  AppDimens._();
+  static const double gap1 = 1;
+  static const double gap2 = 2;
+  static const double gap3 = 3;
+  static const double gap4 = 4;
+  static const double gap5 = 5;
+  static const double gap6 = 6;
+  static const double gap7 = 7;
+  static const double gap8 = 8;
+  static const double gap9 = 9;
+  static const double gap10 = 10;
+  static const double gap11 = 11;
+  static const double gap12 = 12;
+  static const double gap13 = 13;
+  static const double gap14 = 14;
+  static const double gap15 = 15;
+  static const double gap16 = 16;
+  static const double gap17 = 17;
+  static const double gap18 = 18;
+  static const double gap19 = 19;
+  static const double gap20 = 20;
+  static const double gap21 = 21;
+  static const double gap22 = 22;
+  static const double gap23 = 23;
+  static const double gap24 = 24;
+  static const double gap25 = 25;
+  static const double gap26 = 26;
+  static const double gap27 = 27;
+  static const double gap28 = 28;
+  static const double gap29 = 29;
+  static const double gap30 = 30;
+  static const double gap31 = 31;
+  static const double gap32 = 32;
+  static const double gap33 = 33;
+  static const double gap34 = 34;
+  static const double gap35 = 35;
+  static const double gap36 = 36;
+  static const double gap37 = 37;
+  static const double gap38 = 38;
+  static const double gap39 = 39;
+  static const double gap40 = 40;
+  static const double gap48 = 48;
+  static const double gap60 = 60;
+  static const double gap400 = 400;
+}

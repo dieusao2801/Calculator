@@ -51,7 +51,7 @@ Output `build_runner` sinh ra các file `*.g.dart` (Riverpod, json), `*.gr.dart`
 
 Tách 3 lớp rõ ràng — khi sửa cần giữ ranh giới này:
 
-1. **`CalculatorEngine`** (`features/calculator/domain/calculator_engine.dart`) — pure logic, không phụ thuộc Flutter. Quản lý chuyển đổi giữa biểu thức **UI** (`+ − × ÷` Unicode, dấu phẩy thập phân `,`, phân cách nghìn `.`) và **internal** (`+ - * /`, dấu chấm thập phân). Có parser đệ quy riêng (`_Parser`) — không dùng library `math_expressions`.
+1. **`CalculatorEngine`** (`features/calculator/domain/calculator_engine.dart`) — pure logic, không phụ thuộc Flutter. Quản lý chuyển đổi giữa biểu thức **UI** (`+ − × ÷` Unicode, dấu phẩy thập phân `,`, phân cách nghìn `.`) và **toán học** (`+ - * /`, dấu chấm thập phân). Có parser đệ quy riêng (`_Parser`) — không dùng library `math_expressions`.
 2. **`CalculatorController`** (`presentation/controllers/calculator_controller.dart`) — Riverpod `@riverpod` notifier, là entry point duy nhất từ UI. Mỗi action gọi engine rồi `state = state.copyWith(...)`.
 3. **Widgets** (`presentation/widgets/`) — `DisplayPanel`, `CalcGrid`, `MenuTabs`, `CalcButton` — chỉ đọc state qua `ref.watch(calculatorControllerProvider)` và gọi method controller.
 
@@ -61,7 +61,7 @@ Tách 3 lớp rõ ràng — khi sửa cần giữ ranh giới này:
 
 - Toán tử UI là Unicode: `displayPlus '+'`, `displayMinus '−'` (U+2212, KHÔNG phải `-`), `displayTimes '×'`, `displayDivide '÷'`.
 - Dấu thập phân hiển thị: `,` (chuẩn VN). Phân cách hàng nghìn: `.`.
-- Khi đẩy ra engine để parse luôn dùng `engine.toInternal(...)`. Khi format kết quả gọi `engine.formatNumberForDisplay(...)`.
+- Khi đẩy ra engine để parse luôn dùng `engine.toMathExpression(...)`. Khi format kết quả gọi `engine.formatNumberForDisplay(...)`.
 
 ### Hành vi tinh tế (đừng đổi mà không hiểu)
 

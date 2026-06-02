@@ -12,12 +12,21 @@
     "loading": "Đang tải dữ liệu..."
   },
   "calculator": {
-    "tab_recent": "Gần đây",
+    "tab_ai_tour": "Gần đây",
     "tab_converter": "Quy đổi",
     "tab_calculator": "Máy tính",
     "tab_settings": "Cài đặt",
-    "error_generic": "Lỗi",
+    "error_generic": "Biểu thức không chính xác",
     "error_divide_by_zero": "Không thể chia cho 0",
-    "coming_soon": "Sắp ra mắt"
+    "max_digits_exceeded": "Tối đa 15 chữ số cho mỗi số hạng",
+    "coming_soon": "Tính năng này sắp ra mắt"
+  },
+  "settings": {
+    "theme_section_title": "Giao diện",
+    "theme": {
+      "classic": "Cổ điển",
+      "modern1": "Hiện đại 1",
+      "special1": "Đặc biệt 1"
+    }
   }
 }

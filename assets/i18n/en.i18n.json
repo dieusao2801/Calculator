@@ -12,12 +12,21 @@
     "loading": "Loading data..."
   },
   "calculator": {
-    "tab_recent": "Recent",
+    "tab_ai_tour": "Recent",
     "tab_converter": "Converter",
     "tab_calculator": "Calculator",
     "tab_settings": "Settings",
-    "error_generic": "Error",
+    "error_generic": "Expression is incorrect",
     "error_divide_by_zero": "Cannot divide by zero",
-    "coming_soon": "Coming soon"
+    "max_digits_exceeded": "Maximum 15 digits per operand",
+    "coming_soon": "This feature is coming soon"
+  },
+  "settings": {
+    "theme_section_title": "Theme",
+    "theme": {
+      "classic": "Classic",
+      "modern1": "Modern 1",
+      "special1": "Special 1"
+    }
   }
 }
