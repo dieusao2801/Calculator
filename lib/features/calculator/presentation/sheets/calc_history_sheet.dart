@@ -1,8 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:calculator/core/extensions/date_extension.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
+import 'package:calculator/core/widgets/dialogs/confirm_dialog.dart';
 import 'package:calculator/core/widgets/dialogs/input_dialog.dart';
 import 'package:calculator/features/calculator/presentation/dialogs/history_actions_dialog.dart';
+import 'package:calculator/features/calculator/presentation/dialogs/history_copy_calculation.dart';
+import 'package:calculator/features/calculator/presentation/dialogs/history_edit_dialog.dart';
+import 'package:calculator/features/calculator/presentation/dialogs/history_share_dialog.dart';
 import 'package:calculator/features/calculator/presentation/providers/calculator_controller.dart';
 import 'package:calculator/features/calculator/presentation/providers/calculator_history_controller.dart';
 import 'package:calculator/gen/assets.gen.dart';
@@ -10,6 +14,7 @@ import 'package:calculator/gen/strings.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/styles/app_colors.dart';
+import '../../../../core/styles/app_styles.dart';
 import '../../../history/domain/entities/calculation_history.dart';
 
 class CalcHistorySheet extends ConsumerWidget {
@@ -82,7 +87,7 @@ class CalcHistorySheet extends ConsumerWidget {
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
                                   visualDensity: VisualDensity.compact,
-                                  icon: const Icon(Icons.more_vert, size: 24, color: Colors.black),
+                                  icon: Icon(item.isLock ? Icons.lock : Icons.more_vert, size: 24, color: Colors.black),
                                 ),
                               ],
                             ),
@@ -126,7 +131,7 @@ class CalcHistorySheet extends ConsumerWidget {
                     ),
                   ),
                 ),
-                Divider(height: 1, thickness: 1, color: Colors.black.withValues(alpha: 0.15)),
+                AppStyles.divider(),
               ],
             );
           },
@@ -154,7 +159,7 @@ class CalcHistorySheet extends ConsumerWidget {
 
   void _onMoreTap(BuildContext context, WidgetRef ref, CalculationHistory item) async {
     final result = await HistoryActionsDialog.show(context, item);
-    if (result == null) return;
+    if (result == null || !context.mounted) return;
     final calculatorController = ref.read(calculatorControllerProvider.notifier);
     switch (result) {
       case HistoryAction.restoreCalculation:
@@ -162,20 +167,27 @@ class CalcHistorySheet extends ConsumerWidget {
       case HistoryAction.restoreResult:
         calculatorController.restoreResult(item);
       case HistoryAction.copy:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        await HistoryCopyCalculationDialog.show(context, item);
       case HistoryAction.share:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        await HistoryShareDialog.show(context, item);
       case HistoryAction.edit:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        final updated = await HistoryEditDialog.show(context, item);
+        if (updated != null && context.mounted) {
+          ref.read(calculatorHistoryControllerProvider.notifier).updateRecord(updated);
+        }
       case HistoryAction.delete:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        ConfirmDialog.show(
+          context: context,
+          title: t.history.delete_history,
+          message: t.history.msg_delete_history,
+          onPositive: () {
+            ref.read(calculatorHistoryControllerProvider.notifier).deleteRecord(item);
+            context.maybePop();
+          },
+        );
+
       case HistoryAction.lock:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        ref.read(calculatorHistoryControllerProvider.notifier).lockOrUnlockRecord(item);
     }
   }
 }

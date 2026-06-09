@@ -101,7 +101,7 @@ class CalcButton extends StatelessWidget {
       fit: BoxFit.scaleDown,
       child: Text(
         label ?? '',
-        style: AppTextStyles.calcButtonLabel.copyWith(color: fg),
+        style: AppTextStyles.calculatorKeyLabel.copyWith(color: fg),
         textAlign: TextAlign.center,
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:calculator/core/styles/app_colors.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
+import 'package:calculator/core/styles/app_text_styles.dart';
 import 'package:calculator/core/theme/app_theme_ext.dart';
 import 'package:flutter/material.dart';
 
@@ -268,10 +269,7 @@ class Header extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: fg),
-            ),
+            child: Text(title, style: AppTextStyles.headlineSmall.copyWith(color: fg)),
           ),
           if (actions != null) ...actions!,
           if (showCloseButton)

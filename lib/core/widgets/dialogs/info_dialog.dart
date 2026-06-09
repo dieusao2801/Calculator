@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:calculator/core/styles/app_colors.dart';
 import 'package:calculator/core/widgets/dialogs/app_base_dialog.dart';
+import 'package:calculator/core/styles/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Template dialog thông báo 1 nút OK.

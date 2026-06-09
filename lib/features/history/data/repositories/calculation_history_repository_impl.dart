@@ -18,8 +18,8 @@ class CalculationHistoryRepositoryImpl implements CalculationHistoryRepository {
   }
 
   @override
-  Future<void> saveHistory(CalculationHistory entity) async {
-    await _db.into(_table).insert(CalculationHistoryMapper.toCompanion(entity));
+  Future<int> saveHistory(CalculationHistory entity) {
+    return _db.into(_table).insert(CalculationHistoryMapper.toCompanion(entity));
   }
 
   @override

@@ -5,24 +5,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'save_calculation_history.g.dart';
 
-/// UseCase: đóng gói expression + result thành entity rồi persist vào history.
-///
-/// Lưu ý: chỉ tách ra khỏi controller khi cần compose nhiều bước (build entity
-/// + save). Nếu sau này thêm analytics/sync/streak thì hợp lý mở rộng tại đây.
+/// UseCase: persist 1 record vào history. Trả về id mới do DB sinh ra,
+/// caller dùng id này để cập nhật state UI (đồng bộ với DB).
 class SaveCalculationHistoryUseCase {
   SaveCalculationHistoryUseCase(this._historyRepository);
 
   final CalculationHistoryRepository _historyRepository;
 
-  Future<void> call({required String expression, required String result, String note = ''}) {
-    final entry = CalculationHistory(
-      expression: expression,
-      result: result,
-      isLock: false,
-      note: note,
-      createdTime: DateTime.now(),
-    );
-    return _historyRepository.saveHistory(entry);
+  Future<int> call(CalculationHistory entity) {
+    return _historyRepository.saveHistory(entity);
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:calculator/core/styles/app_colors.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
+import 'package:calculator/core/styles/app_text_styles.dart';
 import 'package:calculator/core/widgets/sheets/app_bottom_sheet.dart' show sheetSurfaceDecoration, Header;
 import 'package:flutter/material.dart';
 
@@ -30,8 +31,7 @@ class AppBaseDialog {
     return showDialog<T>(
       context: context,
       barrierDismissible: barrierDismissible,
-
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5), // Darker dim background
       builder: (_) => _DialogView(
         title: title,
         message: message,
@@ -131,7 +131,7 @@ class _DialogView extends StatelessWidget {
   Widget _body(Color fg) {
     if (content != null) return content!;
     if (message != null) {
-      return Text(message!, style: TextStyle(fontSize: 16, color: AppColors.textPrimary, height: 1.4));
+      return Text(message!, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary, height: 1.4));
     }
     return const SizedBox.shrink();
   }

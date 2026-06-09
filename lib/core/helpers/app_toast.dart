@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:calculator/core/styles/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class AppToast {
@@ -12,7 +13,8 @@ class AppToast {
       _currentEntry = null;
     }
 
-    final overlay = Overlay.of(context);
+    // rootOverlay: true để toast sống độc lập với route stack (dialog/sheet pop không xoá toast).
+    final overlay = Overlay.of(context, rootOverlay: true);
     _currentEntry = OverlayEntry(
       builder: (context) => _ToastWidget(
         message: message,
@@ -81,7 +83,7 @@ class _ToastWidgetState extends State<_ToastWidget> with SingleTickerProviderSta
               child: Text(
                 widget.message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400),
+                style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
               ),
             ),
           ),

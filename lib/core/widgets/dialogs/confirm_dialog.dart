@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:calculator/core/styles/app_colors.dart';
 import 'package:calculator/core/widgets/dialogs/app_base_dialog.dart';
+import 'package:calculator/core/styles/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Template dialog xác nhận Yes/No.
@@ -36,20 +37,14 @@ class ConfirmDialog {
       actions: [
         TextButton(
           onPressed: () => context.maybePop(false),
-          child: Text(
-            cancelLabel.toUpperCase(),
-            style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-          ),
+          child: Text(cancelLabel.toUpperCase(), style: AppTextStyles.labelLarge.copyWith(color: AppColors.textPrimary)),
         ),
         TextButton(
           onPressed: () {
             onPositive?.call();
             context.maybePop(true);
           },
-          child: Text(
-            confirmLabel.toUpperCase(),
-            style: TextStyle(color: confirmColor, fontWeight: FontWeight.bold),
-          ),
+          child: Text(confirmLabel.toUpperCase(), style: AppTextStyles.labelLarge.copyWith(color: confirmColor)),
         ),
       ],
     );

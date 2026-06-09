@@ -1,6 +1,7 @@
 import 'package:calculator/core/router/home_tab.dart';
 import 'package:calculator/core/router/navigation_provider.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
+import 'package:calculator/core/styles/app_text_styles.dart';
 import 'package:calculator/core/theme/app_theme_ext.dart';
 import 'package:calculator/gen/assets.gen.dart';
 import 'package:calculator/gen/strings.g.dart';
@@ -75,11 +76,7 @@ class _MenuTabsContent extends ConsumerWidget {
                       AnimatedDefaultTextStyle(
                         duration: duration,
                         curve: curve,
-                        style: TextStyle(
-                          fontSize: active ? 13 : 11,
-                          fontWeight: active ? FontWeight.bold : FontWeight.w500,
-                          color: color,
-                        ),
+                        style: (active ? AppTextStyles.navTabActive : AppTextStyles.navTabInactive).copyWith(color: color),
                         child: Text(label),
                       ),
                     ],

@@ -57,6 +57,7 @@ dependencies:
   flutter_svg: ^2.3.0 # Hiển thị ảnh vector định dạng SVG
 
   # --- DEVICE / SYSTEM ---
+  share_plus: ^10.1.4 # Chia sẻ nội dung qua System Share Sheet
   vibration: ^3.1.3 # Rung thiết bị, hỗ trợ pattern + amplitude
   audioplayers: ^6.1.0 # Phát âm thanh (UI sounds, click effects)
   wakelock_plus: ^1.2.8 # Giữ màn hình sáng (thay cho wakelock đã deprecated)

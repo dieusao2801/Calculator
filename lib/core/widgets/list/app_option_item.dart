@@ -1,3 +1,4 @@
+import 'package:calculator/core/styles/app_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Một widget item tùy chọn chuẩn cho các Dialog hoặc Menu.
@@ -52,7 +53,7 @@ class AppOptionItem extends StatelessWidget {
             ),
           ),
         ),
-        if (!isLast) Divider(height: 1, thickness: 0.5, color: Colors.black.withValues(alpha: 0.1)),
+        if (!isLast) AppStyles.divider(thickness: 0.5),
       ],
     );
   }

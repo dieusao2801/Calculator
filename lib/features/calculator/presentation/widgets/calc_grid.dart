@@ -7,7 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CalcGrid extends ConsumerWidget {
-  const CalcGrid({super.key});
+  const CalcGrid({
+    super.key,
+    this.padding = const EdgeInsets.only(left: AppDimens.gap12, right: AppDimens.gap12, bottom: AppDimens.gap12),
+  });
+
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -101,7 +106,7 @@ class CalcGrid extends ConsumerWidget {
     ];
 
     return Padding(
-      padding: const EdgeInsets.only(left: AppDimens.gap12, right: AppDimens.gap12, bottom: AppDimens.gap12),
+      padding: padding,
       child: Column(
         children: [
           for (var i = 0; i < rows.length; i++) ...[

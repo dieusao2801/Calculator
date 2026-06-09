@@ -6,8 +6,8 @@ abstract class CalculationHistoryRepository {
   /// Lấy danh sách lịch sử.
   Future<List<CalculationHistory>> getAllHistory();
 
-  /// Lưu lịch sử.
-  Future<void> saveHistory(CalculationHistory calculationHistory);
+  /// Lưu lịch sử. Trả về id mới được DB sinh ra.
+  Future<int> saveHistory(CalculationHistory calculationHistory);
 
   /// Xóa lịch sử theo ID.
   Future<void> deleteHistory(int id);
