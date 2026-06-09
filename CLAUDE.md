@@ -81,7 +81,7 @@ Tách 3 lớp rõ ràng — khi sửa cần giữ ranh giới này:
 ### 4.3 Quy ước hiển thị số
 
 - Toán tử UI là Unicode: `displayPlus '+'`, `displayMinus '−'` (U+2212, KHÔNG phải `-`), `displayTimes '×'`, `displayDivide '÷'`.
-- Dấu thập phân hiển thị: `,` (chuẩn VN). Phân cách hàng nghìn: `.`.
+- Dấu thập phân hiển thị: `.` (chuẩn US). Phân cách hàng nghìn: `,`.
 - Khi đẩy ra engine để parse luôn dùng `engine.toMathExpression(...)`. Khi format kết quả gọi `engine.formatNumberForDisplay(...)`.
 
 ### 4.4 Hành vi tinh tế (đừng đổi mà không hiểu)
@@ -95,7 +95,13 @@ Tách 3 lớp rõ ràng — khi sửa cần giữ ranh giới này:
 
 - Khai báo routes trong `lib/core/router/app_router.dart` (`@AutoRouterConfig(replaceInRouteName: 'Page,Route')`).
 - Mọi page mới phải có `@RoutePage()` rồi chạy `build_runner` để sinh `app_router.gr.dart`.
-- Initial route: `SplashRoute` → tự `replace` sang `CalculatorRoute` sau 3 s.
+- Initial route: `HomeRoute` (4 tab). Splash **không** là route — xem §4.9.
+
+### 4.9 Splash (overlay-based)
+
+- Không dùng route splash. `main.dart` gọi `FlutterNativeSplash.preserve` rồi precache ảnh + warm `SharedPreferences` trước `runApp`; `MaterialApp.router.builder` bọc `SplashOverlay` phủ lên Home đã mount sẵn.
+- `SplashOverlay` (`features/splash/.../splash_page.dart`): postFrame đầu → `FlutterNativeSplash.remove()` + `splashController.start()`. Home build song song phía sau → khi overlay fade-out (`AnimatedOpacity` 250ms) thì Home đã ready → hand-off không gap. Fade xong → overlay tự gỡ khỏi cây.
+- `SplashController` (`@riverpod`): `start()` chạy `Future.wait([_warmUp(), delay minSplashDuration])` rồi set `isReady`. `minSplashDuration = 2500ms` chống nháy logo; `_warmUp` pre-warm Calculator state, lỗi chỉ log (không chặn vào app).
 
 ### 4.6 I18n (Slang)
 

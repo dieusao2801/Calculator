@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'package:intl/intl.dart';
+import 'package:calculator/core/log/app_log.dart';
 
 import '../../../../core/constants/calc_symbols.dart';
 
@@ -32,13 +32,7 @@ class CalculatorEngine {
     CalcSymbols.plusMinus,
   };
 
-  static const Set<String> _infixOperators = {
-    CalcSymbols.plus,
-    CalcSymbols.minus,
-    CalcSymbols.times,
-    CalcSymbols.divide,
-    CalcSymbols.power,
-  };
+  static const Set<String> _infixOperators = {CalcSymbols.power};
 
   bool isOperator(String s) => _operators.contains(s);
 
@@ -51,22 +45,23 @@ class CalculatorEngine {
 
     final negative = raw.startsWith('-');
     final unsigned = negative ? raw.substring(1) : raw;
-    final dotIndex = unsigned.indexOf('.');
-    final intPart = dotIndex == -1 ? unsigned : unsigned.substring(0, dotIndex);
-    final decPart = dotIndex == -1 ? '' : unsigned.substring(dotIndex + 1);
 
-    final intParsed = int.tryParse(intPart);
-    final formattedInt = intParsed != null ? NumberFormat.decimalPattern('en_US').format(intParsed) : intPart;
+    // Luôn split theo '.' vì raw input từ double.toStringAsFixed dùng '.'
+    final parts = unsigned.split('.');
+    final intPart = parts[0];
+    final decPart = parts.length > 1 ? parts[1] : '';
 
-    final body = decPart.isEmpty ? formattedInt : '$formattedInt$displayDecimal$decPart';
+    // Để đảm bảo ý muốn của bạn là dùng dấu '.' cho thập phân và bỏ các dấu khác gây nhầm lẫn:
+    // Tạm thời bỏ grouping separator (,) ở phần nguyên.
+    final body = decPart.isEmpty ? intPart : '$intPart.$decPart';
     return negative ? '-$body' : body;
   }
 
   /// Chuyển đổi biểu thức từ định dạng hiển thị (UI) sang định dạng máy tính (Toán học).
   /// - Loại bỏ dấu phân cách hàng nghìn (,).
   /// - Thay thế các ký hiệu Unicode (×, ÷, −) thành toán tử lập trình (*, /, -).
-  String toMathExpression(String uiExpr) {
-    var internal = uiExpr
+  String toMathExpression(String displayExpression) {
+    return displayExpression
         .replaceAll(displayTimes, '*')
         .replaceAll(displayDivide, '/')
         .replaceAll(displayMinus, '-')
@@ -74,8 +69,6 @@ class CalculatorEngine {
         .replaceAll(displaySquare, '^2')
         .replaceAll(displayGroupSeparator, '')
         .replaceAll(displayDecimal, '.');
-
-    return internal;
   }
 
   /// Kiểm tra biểu thức có đang kết thúc bằng một "term" đã hoàn chỉnh hay không
@@ -85,6 +78,35 @@ class CalculatorEngine {
     if (expression.isEmpty) return false;
     final lastChar = expression[expression.length - 1];
     return lastChar == CalcSymbols.closeBracket || lastChar == displayPercent || lastChar == displaySquare;
+  }
+
+  /// Chèn [token] (số hoặc biểu thức) vào cuối [expression] theo ngữ cảnh, giống
+  /// như user nhập tay liên tục: tự thêm `×` ngầm hoặc append thẳng tùy lastChar.
+  ///
+  /// - [justEvaluated]=true → replace toàn bộ (kết quả `=` được coi như slot trống mới).
+  /// - Expression rỗng → token đứng đầu.
+  /// - Sau operator chờ số (`+ − × ÷ ^ (`) → append thẳng.
+  /// - Sau term hoàn chỉnh (`) % ²`) hoặc sau số → thêm `×` ngầm.
+  /// - [wrapInBrackets]=true VÀ token chứa operator VÀ phải thêm `×` ngầm → bọc
+  ///   `(...)` quanh token để giữ precedence (vd restore `2+3` vào `5×` thành `5×(2+3)`).
+  String smartInsert(String expression, String token, {bool justEvaluated = false, bool wrapInBrackets = false}) {
+    if (token.isEmpty) return expression;
+    if (justEvaluated) return token;
+    if (expression.isEmpty) return token;
+
+    final lastChar = expression[expression.length - 1];
+
+    // Sau operator chờ số → append thẳng (operand mới, không cần wrap).
+    if (isOperator(lastChar) && !_endsWithCompletedTerm(expression)) {
+      return '$expression$token';
+    }
+
+    // Sau term hoàn chỉnh hoặc sau số → `×` ngầm; wrap token nếu cần giữ precedence.
+    final tokenContainsOperator = token.split('').any(isOperator);
+    final wrapped = (wrapInBrackets && tokenContainsOperator)
+        ? '${CalcSymbols.openBracket}$token${CalcSymbols.closeBracket}'
+        : token;
+    return '$expression$displayTimes$wrapped';
   }
 
   String appendDigit(String expression, String digit, {bool justEvaluated = false}) {
@@ -166,8 +188,9 @@ class CalculatorEngine {
     }
 
     if (isOperator(lastChar)) {
-      // Nếu nhấn toán tử khác khi đang có toán tử cũ (trừ ngoặc), thì ghi đè
-      if (lastChar != displayBrackets) {
+      // Chỉ ghi đè nếu là toán tử infix (+, -, ×, ÷)
+      // Không ghi đè nếu là ), %, ²
+      if (lastChar != CalcSymbols.closeBracket && lastChar != displayPercent && lastChar != displaySquare) {
         return expression.substring(0, expression.length - 1) + op;
       }
     }
@@ -242,100 +265,116 @@ class CalculatorEngine {
   }
 
   /// Tính toán giá trị của biểu thức hiển thị trên UI.
-  /// - [expression]: Chuỗi biểu thức UI (ví dụ: "9×(2+3)").
+  /// Chuẩn hóa biểu thức UI: cắt operator dở dang (non-strict) + auto-close ngoặc.
+  /// Trả về chuỗi đã chuẩn hóa ở dạng UI (×÷²,…); rỗng nếu sau trim không còn gì.
+  String normalize(String expression, {bool isStrict = false}) {
+    if (expression.isEmpty) return '';
+    var normalized = expression;
+
+    // Non-strict: cắt operator dư ở đuôi ("9+5+" → "9+5"). Strict (phím "="): giữ để báo lỗi.
+    if (!isStrict) {
+      while (normalized.isNotEmpty &&
+          isOperator(normalized[normalized.length - 1]) &&
+          // Trừ '%', '²', ')' — hậu tố hợp lệ, không phải toán tử dở dang.
+          normalized[normalized.length - 1] != displayPercent &&
+          normalized[normalized.length - 1] != displaySquare &&
+          normalized[normalized.length - 1] != CalcSymbols.closeBracket) {
+        normalized = normalized.substring(0, normalized.length - 1);
+      }
+    }
+
+    if (normalized.isEmpty) return '';
+
+    // Auto-close '(' còn thiếu — áp dụng cả strict mode vì là convention UX, không phải dọn rác.
+    int openBracketCount = 0;
+    int closeBracketCount = 0;
+    for (int i = 0; i < normalized.length; i++) {
+      if (normalized[i] == CalcSymbols.openBracket) openBracketCount++;
+      if (normalized[i] == CalcSymbols.closeBracket) closeBracketCount++;
+    }
+    while (openBracketCount > closeBracketCount) {
+      normalized += CalcSymbols.closeBracket;
+      closeBracketCount++;
+    }
+
+    return normalized;
+  }
+
+  /// - [expression]: Chuỗi biểu thức UI (ví dụ: "9(2+3)").
   /// - [isStrict]: Nếu true, sẽ không tự động cắt bỏ toán tử dư thừa ở cuối.
   ///   Thường dùng cho phím "=" để báo lỗi biểu thức chưa hoàn thiện.
   /// - Quy trình:
-  ///   1. Cắt tỉa các toán tử dư thừa ở cuối chuỗi (nếu không ở chế độ strict).
+  ///   1. Chuẩn hóa qua [normalize] (trim + auto-close ngoặc).
   ///   2. Chuyển đổi sang định dạng nội bộ qua [toMathExpression].
   ///   3. Thực hiện tính toán qua [_evalInternal].
   ///   4. Định dạng kết quả trả về hoặc trả về mã lỗi nếu có (chia cho 0, lỗi cú pháp).
   EvalResult evaluate(String expression, {bool isStrict = false}) {
     if (expression.isEmpty) return const EvalResult(result: '0');
-    var trimmed = expression;
 
-    if (!isStrict) {
-      // Cắt tỉa các toán tử infix dở dang ở cuối (ví dụ: 9 + 5 + -> 9 + 5)
-      while (trimmed.isNotEmpty &&
-          isOperator(trimmed[trimmed.length - 1]) &&
-          trimmed[trimmed.length - 1] != displayPercent &&
-          trimmed[trimmed.length - 1] != displaySquare &&
-          trimmed[trimmed.length - 1] != CalcSymbols.closeBracket) {
-        trimmed = trimmed.substring(0, trimmed.length - 1);
-      }
-    }
+    final normalized = normalize(expression, isStrict: isStrict);
+    if (normalized.isEmpty) return const EvalResult(result: '0');
 
-    if (trimmed.isEmpty) return const EvalResult(result: '0');
-
-    // Tự động đóng các ngoặc còn thiếu trước khi tính toán (Kể cả trong strict mode)
-    int openCount = 0;
-    int closeCount = 0;
-    for (int i = 0; i < trimmed.length; i++) {
-      if (trimmed[i] == CalcSymbols.openBracket) openCount++;
-      if (trimmed[i] == CalcSymbols.closeBracket) closeCount++;
-    }
-    while (openCount > closeCount) {
-      trimmed += CalcSymbols.closeBracket;
-      closeCount++;
-    }
-
-    final internal = toMathExpression(trimmed);
+    // UI → math: ×÷ → */, dấu phẩy → dấu chấm.
+    final mathExpression = toMathExpression(normalized);
     try {
-      final value = _evalInternal(internal);
+      final value = _evalInternal(mathExpression);
+      AppLog.d('evaluate: expression=$expression | math=$mathExpression | value=$value');
+      // NaN/Infinity (0/0, overflow) → không hiển thị được, báo generic.
       if (value.isNaN || value.isInfinite) {
         return const EvalResult(errorKey: 'generic');
       }
       return EvalResult(result: _formatResult(value));
     } on _DivByZeroException {
+      // Bắt riêng để UI map sang i18n 'error_divide_by_zero'.
       return const EvalResult(errorKey: 'divide_by_zero');
     } catch (_) {
       return const EvalResult(errorKey: 'generic');
     }
   }
 
-  /// Chuyển đổi vị trí index từ chuỗi thô sang chuỗi đã định dạng.
+  /// Map index từ chuỗi thô → chuỗi đã format (để đặt cursor đúng chỗ trên UI).
   int rawToFormattedIndex(String rawExpr, int rawIndex) {
     if (rawIndex <= 0) return 0;
     final formatted = formatFullExpression(rawExpr);
     if (rawIndex >= rawExpr.length) return formatted.length;
 
-    // Quy tắc: Duyệt qua chuỗi thô, đếm xem đến vị trí rawIndex đã có bao nhiêu
-    // ký tự đặc biệt được thêm vào trong chuỗi formatted.
-    int currentRaw = 0;
-    int currentFormatted = 0;
+    // 2-pointer: ký tự khớp → tiến cả 2; lệch → chỉ tiến formatted (bỏ qua dấu phân cách).
+    int rawPos = 0;
+    int formattedPos = 0;
 
-    while (currentRaw < rawIndex && currentFormatted < formatted.length) {
-      if (rawExpr[currentRaw] == formatted[currentFormatted]) {
-        currentRaw++;
-        currentFormatted++;
+    while (rawPos < rawIndex && formattedPos < formatted.length) {
+      if (rawExpr[rawPos] == formatted[formattedPos]) {
+        rawPos++;
+        formattedPos++;
       } else {
-        // Ký tự tại formatted không có trong raw (thường là dấu ,) -> nhảy qua
-        currentFormatted++;
+        formattedPos++;
       }
     }
-    return currentFormatted;
+    return formattedPos;
   }
 
-  /// Chuyển đổi vị trí index từ chuỗi đã định dạng về chuỗi thô.
+  /// Map index từ chuỗi đã format → chuỗi thô (ngược của [rawToFormattedIndex]).
   int formattedToRawIndex(String rawExpr, int formattedIndex) {
     if (formattedIndex <= 0) return 0;
     final formatted = formatFullExpression(rawExpr);
     if (formattedIndex >= formatted.length) return rawExpr.length;
 
-    int currentRaw = 0;
-    int currentFormatted = 0;
+    // Cùng 2-pointer như rawToFormattedIndex, đảo điều kiện dừng.
+    int rawPos = 0;
+    int formattedPos = 0;
 
-    while (currentFormatted < formattedIndex && currentRaw < rawExpr.length) {
-      if (rawExpr[currentRaw] == formatted[currentFormatted]) {
-        currentRaw++;
-        currentFormatted++;
+    while (formattedPos < formattedIndex && rawPos < rawExpr.length) {
+      if (rawExpr[rawPos] == formatted[formattedPos]) {
+        rawPos++;
+        formattedPos++;
       } else {
-        currentFormatted++;
+        formattedPos++;
       }
     }
-    return currentRaw;
+    return rawPos;
   }
 
+  /// Lấy số hạng cuối (đoạn chữ số sau operator gần nhất).
   String _getLastNumber(String expr) {
     var i = expr.length - 1;
     while (i >= 0 && !isOperator(expr[i])) {
@@ -344,26 +383,48 @@ class CalculatorEngine {
     return expr.substring(i + 1);
   }
 
+  /// Format kết quả [value] thành chuỗi hiển thị cuối cùng (sau dấu `=`).
   String _formatResult(double value) {
+    // Buffer chuỗi kết quả thô trước khi đẩy qua formatter hiển thị.
+    String raw;
+
+    // Số nguyên + nằm trong ngưỡng mantissa 53-bit (1e15) → toInt() không mất precision.
+    if (value == value.truncateToDouble() && value.abs() < 1e15) {
+      // Bỏ ".0" cho số nguyên (vd 4.0 → "4").
+      raw = value.toInt().toString();
+    } else {
+      // Cap 6 chữ số sau dấu chấm; luôn pad đủ 6 (vd 4.5 → "4.500000").
+      raw = value.toStringAsFixed(6);
+      // Trim '0' thừa ở đuôi rồi trim '.' lẻ nếu còn (vd "4.500000" → "4.5").
+      raw = raw.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+    }
+
+    // Áp convention dấu thập phân + thousand separator của app.
+    return formatNumberForDisplay(raw);
+  }
+
+  /// Format số cho preview — cap tối đa 6 chữ số thập phân (round half-up),
+  /// bỏ trailing zeros.
+  String formatPreviewNumber(double value) {
     String raw;
     if (value == value.truncateToDouble() && value.abs() < 1e15) {
       raw = value.toInt().toString();
     } else {
-      raw = value.toStringAsFixed(10);
+      raw = value.toStringAsFixed(6);
       raw = raw.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
     }
     return formatNumberForDisplay(raw);
   }
 
-  /// Định dạng toàn bộ chuỗi biểu thức để hiển thị lên UI.
-  /// Duyệt qua chuỗi biểu thức, tách các phần số và toán tử riêng biệt.
-  /// Mỗi phần số sẽ được chạy qua hàm [formatNumberForDisplay] để thêm dấu phân cách hàng nghìn.
+  /// Format toàn bộ biểu thức để hiển thị — tách số và operator, mỗi số chạy
+  /// qua [formatNumberForDisplay] để thêm dấu phân cách hàng nghìn.
   String formatFullExpression(String expr) {
     if (expr.isEmpty) return '';
 
     final List<String> parts = [];
     String currentNumber = '';
 
+    // Gặp operator → flush số đang gom, append operator. Hết loop flush số còn lại.
     for (int i = 0; i < expr.length; i++) {
       final char = expr[i];
       if (isOperator(char)) {
@@ -384,23 +445,19 @@ class CalculatorEngine {
     return parts.join('');
   }
 
-  /// Đếm số lượng chữ số trong phần số chứa vị trí hiện tại của con trỏ.
+  /// Đếm chữ số trong số hạng cuối (dùng để chặn vượt max digits khi nhập).
   int getLastNumberDigitCount(String expr) {
-    // Tìm ranh giới của số hạng cuối cùng
     final lastNumber = _getLastNumber(expr);
-    // Chỉ đếm các ký tự là số
     return lastNumber.replaceAll(RegExp(r'\D'), '').length;
   }
 
-  /// Khởi chạy trình phân tích toán học (Parser) cho một biểu thức nội bộ.
-  /// - Đầu vào: Chuỗi biểu thức đã được "Internalize" (ví dụ: "5*2+3").
-  /// - Đầu ra: Giá trị số double sau khi tính toán.
-  /// Ném ra lỗi [FormatException] nếu phát hiện ký tự không hợp lệ hoặc cú pháp sai.
-  double _evalInternal(String input) {
-    final parser = _Parser(input);
-    final value = parser.parseExpr();
+  /// Eval biểu thức nội bộ (đã chuyển sang dạng toán học `*`/`/`/dấu chấm).
+  /// Throw [FormatException] nếu cú pháp sai (parser chưa tiêu hết input).
+  double _evalInternal(String mathExpression) {
+    final parser = _Parser(mathExpression);
+    final result = parser.parseExpr();
     if (!parser.isEnd) throw FormatException('Unexpected char at ${parser.pos}');
-    return value;
+    return result;
   }
 }
 

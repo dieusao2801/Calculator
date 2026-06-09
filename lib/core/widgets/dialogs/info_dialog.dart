@@ -1,5 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:calculator/core/styles/app_colors.dart';
-import 'package:calculator/core/widgets/dialogs/app_dialog.dart';
+import 'package:calculator/core/widgets/dialogs/app_base_dialog.dart';
 import 'package:flutter/material.dart';
 
 /// Template dialog thông báo 1 nút OK.
@@ -19,7 +20,7 @@ class InfoDialog {
     final loc = MaterialLocalizations.of(context);
     final label = buttonText ?? loc.okButtonLabel;
 
-    return AppDialog.show<bool>(
+    return AppBaseDialog.show<bool>(
       context: context,
       title: title,
       message: message,
@@ -27,13 +28,10 @@ class InfoDialog {
       barrierDismissible: barrierDismissible,
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
+          onPressed: () => context.maybePop(true),
           child: Text(
-            label,
-            style: const TextStyle(
-              color: AppColors.brandOrange,
-              fontWeight: FontWeight.w600,
-            ),
+            label.toUpperCase(),
+            style: const TextStyle(color: AppColors.brandOrange, fontWeight: FontWeight.w600),
           ),
         ),
       ],

@@ -1,3 +1,4 @@
+import 'package:calculator/features/settings/presentation/widgets/sound_vibration_section.dart';
 import 'package:flutter/material.dart';
 
 class SettingsTab extends StatelessWidget {
@@ -11,6 +12,7 @@ class SettingsTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SoundVibrationSection(),
             // ThemeSelectorSection(),
             // TODO: thêm section khác (About, Version, Privacy…) khi cần.
           ],

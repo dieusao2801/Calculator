@@ -11,6 +11,7 @@ class CalcGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(calculatorControllerProvider);
     final ctl = ref.read(calculatorControllerProvider.notifier);
 
     final rows = <List<Widget>>[
@@ -26,7 +27,7 @@ class CalcGrid extends ConsumerWidget {
         CalcButton(
           variant: CalcButtonVariant.function,
           svgIcon: Assets.svg.icUndo,
-          onPressed: ctl.undo,
+          onPressed: state.canUndo ? ctl.undo : null,
           iconSize: AppDimens.gap48,
         ),
       ],

@@ -7,10 +7,7 @@ class HistoryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(
-        t.calculator.tab_ai_tour, // We should update this i18n key later
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
+      child: Text(t.calculator.tab_ai_tour, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
     );
   }
 }

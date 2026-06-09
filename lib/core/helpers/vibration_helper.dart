@@ -25,6 +25,10 @@ class VibrationHelper {
   /// Rung nhẹ — tap nút thường.
   static Future<void> light() => _vibrate(duration: 10, amplitude: 64);
 
+  /// Rung 50ms — đúng spec Android gốc (`VibrateUtils.vibrate(50)`).
+  /// Dùng cho phản hồi tap bàn phím calculator.
+  static Future<void> tap() => _vibrate(duration: 50, amplitude: 96);
+
   /// Rung vừa — toán tử / action.
   static Future<void> medium() => _vibrate(duration: 30, amplitude: 128);
 

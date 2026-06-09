@@ -5,7 +5,13 @@
     "save": "Lưu",
     "delete": "Xóa",
     "retry": "Thử lại",
-    "add": "Thêm mới"
+    "add": "Thêm mới",
+    "edit": "Chỉnh sửa",
+    "add_note_here": "Thêm ghi chú ở đây",
+    "copy": "Sao chép",
+    "share": "Chia sẻ",
+    "lock": "Khóa mục này",
+    "unlock": "Mở khóa mục này"
   },
   "splash": {
     "app_name": "Calculator AI",
@@ -21,12 +27,29 @@
     "max_digits_exceeded": "Tối đa 15 chữ số cho mỗi số hạng",
     "coming_soon": "Tính năng này sắp ra mắt"
   },
+  "history": {
+    "title": "Lịch sử",
+    "no_history_yet": "Chưa có lịch sử",
+    "restore_calculation": "Khôi phục biểu thức",
+    "restore_result": "Khôi phục kết quả",
+    "delete_history": "Xóa lịch sử",
+    "msg_delete_history": "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?"
+  },
   "settings": {
     "theme_section_title": "Giao diện",
     "theme": {
       "classic": "Cổ điển",
       "modern1": "Hiện đại 1",
       "special1": "Đặc biệt 1"
+    },
+    "feedback_section_title": "Phản hồi",
+    "sound": {
+      "title": "Âm thanh phím",
+      "subtitle": "Phát âm thanh khi bấm phím"
+    },
+    "vibration": {
+      "title": "Rung phím",
+      "subtitle": "Rung khi bấm phím"
     }
   }
 }

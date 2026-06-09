@@ -81,9 +81,22 @@ class _AutoFitTextState extends State<AutoFitText> {
       _controller.text = widget.text;
       _updateSelection();
       _controller.addListener(_handleSelectionChange);
+      _ensureFocus();
     } else if (widget.cursorIndex != oldWidget.cursorIndex) {
       _updateSelection();
+      _ensureFocus();
     }
+  }
+
+  /// Re-focus TextField sau khi state đổi từ ngoài (vd: restore từ history sheet/dialog)
+  /// để cursor lại hiện. Bỏ qua nếu đã có focus hoặc widget không hiển thị cursor.
+  void _ensureFocus() {
+    if (!widget.showCursor) return;
+    if (_focusNode.hasFocus) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _focusNode.hasFocus) return;
+      _focusNode.requestFocus();
+    });
   }
 
   void _updateSelection() {
@@ -200,6 +213,10 @@ class _AutoFitTextState extends State<AutoFitText> {
             cursorColor: widget.color,
             cursorWidth: 2.0,
             style: TextStyle(fontSize: fontSize, fontWeight: widget.fontWeight, color: widget.color, letterSpacing: 0.5),
+            // Strut giữ line-height theo maxFontSize ⇒ TextField không co lại khi
+            // _calculateFontSize giảm font, tránh kéo theo DisplayPanel co và
+            // làm CalcGrid bị giãn ra xấu.
+            strutStyle: StrutStyle(fontSize: widget.maxFontSize, forceStrutHeight: true),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,

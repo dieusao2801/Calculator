@@ -1,5 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:calculator/core/styles/app_colors.dart';
-import 'package:calculator/core/widgets/dialogs/app_dialog.dart';
+import 'package:calculator/core/widgets/dialogs/app_base_dialog.dart';
 import 'package:flutter/material.dart';
 
 /// Template dialog xác nhận Yes/No.
@@ -20,30 +21,34 @@ class ConfirmDialog {
     String? cancelText,
     bool destructive = false,
     bool barrierDismissible = true,
+    VoidCallback? onPositive,
   }) {
     final loc = MaterialLocalizations.of(context);
     final confirmLabel = confirmText ?? loc.okButtonLabel;
     final cancelLabel = cancelText ?? loc.cancelButtonLabel;
-    final confirmColor = destructive ? AppColors.textError : AppColors.brandOrange;
+    final confirmColor = destructive ? AppColors.textError : AppColors.textPrimary;
 
-    return AppDialog.show<bool>(
+    return AppBaseDialog.show<bool>(
       context: context,
       title: title,
       message: message,
       barrierDismissible: barrierDismissible,
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
+          onPressed: () => context.maybePop(false),
           child: Text(
-            cancelLabel,
-            style: const TextStyle(color: AppColors.textSecondary),
+            cancelLabel.toUpperCase(),
+            style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
           ),
         ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
+          onPressed: () {
+            onPositive?.call();
+            context.maybePop(true);
+          },
           child: Text(
-            confirmLabel,
-            style: TextStyle(color: confirmColor, fontWeight: FontWeight.w600),
+            confirmLabel.toUpperCase(),
+            style: TextStyle(color: confirmColor, fontWeight: FontWeight.bold),
           ),
         ),
       ],

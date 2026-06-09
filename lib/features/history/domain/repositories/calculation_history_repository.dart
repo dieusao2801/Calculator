@@ -14,4 +14,10 @@ abstract class CalculationHistoryRepository {
 
   /// Xóa sạch lịch sử.
   Future<void> clearHistory();
+
+  /// Get Last History
+  Future<CalculationHistory?> getLastHistory();
+
+  /// Update History
+  Future<void> updateHistory(CalculationHistory calculationHistory);
 }

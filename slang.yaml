@@ -1,0 +1,4 @@
+base_locale: en
+input_directory: assets/i18n
+output_directory: lib/gen
+output_file_name: strings.g.dart

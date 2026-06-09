@@ -25,6 +25,20 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(seedColor: id.primaryColor, brightness: brightness),
       scaffoldBackgroundColor: ext.display.bgOuter,
       extensions: [ext],
+      // Sheet/Dialog tự vẽ ảnh nền qua `AppBottomSheet`/`AppDialog`. Set
+      // transparent để không có Color đè lên ảnh.
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.transparent,
+        modalBackgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      ),
+      dialogTheme: const DialogThemeData(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+      ),
     );
   }
 }

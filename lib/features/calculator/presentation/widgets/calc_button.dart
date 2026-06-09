@@ -1,3 +1,4 @@
+import 'package:calculator/core/helpers/keypad_feedback.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
 import 'package:calculator/core/styles/app_text_styles.dart';
 import 'package:calculator/core/theme/app_theme_ext.dart';
@@ -69,7 +70,12 @@ class CalcButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onPressed,
+          onTap: _disabled
+              ? null
+              : () {
+                  KeypadFeedback.tap();
+                  onPressed!();
+                },
           borderRadius: BorderRadius.circular(AppDimens.gap10),
           child: Padding(
             padding: const EdgeInsets.all(AppDimens.gap4),

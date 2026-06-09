@@ -6,15 +6,14 @@ import 'package:drift/drift.dart';
 
 class CalculationHistoryRepositoryImpl implements CalculationHistoryRepository {
   final AppDatabase _db;
+
   CalculationHistoryRepositoryImpl(this._db);
 
   $CalculationHistoryTableTable get _table => _db.calculationHistoryTable;
 
   @override
   Future<List<CalculationHistory>> getAllHistory() async {
-    final list = await (_db.select(
-      _table,
-    )..orderBy([(t) => OrderingTerm.desc(t.createdTime)])).get();
+    final list = await (_db.select(_table)..orderBy([(t) => OrderingTerm.desc(t.createdTime)])).get();
     return list.map((e) => CalculationHistoryMapper.toDomainModel(e)).toList();
   }
 
@@ -31,5 +30,19 @@ class CalculationHistoryRepositoryImpl implements CalculationHistoryRepository {
   @override
   Future<void> clearHistory() async {
     await _db.delete(_table).go();
+  }
+
+  @override
+  Future<CalculationHistory?> getLastHistory() {
+    return (_db.select(_table)
+          ..orderBy([(t) => OrderingTerm.desc(t.createdTime)])
+          ..limit(1))
+        .getSingleOrNull()
+        .then((value) => value != null ? CalculationHistoryMapper.toDomainModel(value) : null);
+  }
+
+  @override
+  Future<void> updateHistory(CalculationHistory calculationHistory) async {
+    await _db.update(_table).replace(CalculationHistoryMapper.toCompanion(calculationHistory));
   }
 }

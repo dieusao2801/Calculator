@@ -1,5 +1,3 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:calculator/core/router/app_router.gr.dart';
 import 'package:calculator/core/styles/app_colors.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
 import 'package:calculator/core/styles/app_text_styles.dart';
@@ -10,64 +8,100 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-@RoutePage()
-class SplashPage extends ConsumerStatefulWidget {
-  const SplashPage({super.key});
+/// Bootstrap overlay phủ lên Home đã mount sẵn. Khi bootstrap xong → fade out
+/// → Home đã build hoàn tất → hand-off không gap, không giật.
+class SplashOverlay extends ConsumerStatefulWidget {
+  const SplashOverlay({super.key, required this.child});
+
+  final Widget child;
 
   @override
-  ConsumerState<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashOverlay> createState() => _SplashOverlayState();
 }
 
-class _SplashPageState extends ConsumerState<SplashPage> {
+class _SplashOverlayState extends ConsumerState<SplashOverlay> {
+  // Sau khi fade-out xong, gỡ hẳn overlay khỏi cây — tránh giữ layer ảnh splash
+  // đè lên Home suốt vòng đời app.
+  bool _overlayRemoved = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      // Gỡ native splash ngay sau frame Flutter đầu tiên để tránh nháy đen.
+      // Precache image vào Flutter ImageCache TRƯỚC khi gỡ native splash —
+      // đảm bảo Flutter overlay đã có ảnh khi xuất hiện, không chớp đen.
+      // Try-catch: ảnh fail (asset path sai / OOM) vẫn phải cho qua, không
+      // được block app ở native splash.
+      try {
+        await Future.wait([
+          precacheImage(Assets.images.bgSplash.provider(), context),
+          precacheImage(Assets.images.bgBackgroundClassic.provider(), context),
+        ]);
+      } catch (_) {}
+      if (!mounted) return;
       FlutterNativeSplash.remove();
-      ref.read(splashControllerProvider.notifier).start(context);
+      ref.read(splashControllerProvider.notifier).start();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    if (_overlayRemoved) return widget.child;
 
-    // Khi controller báo sẵn sàng thì replace sang HomeRoute (đúng một lần).
-    ref.listen<SplashState>(splashControllerProvider, (prev, next) {
-      final wasReady = prev?.isReady ?? false;
-      if (next.isReady && !wasReady && mounted) {
-        context.router.replace(const HomeRoute());
-      }
-    });
+    final isReady = ref.watch(splashControllerProvider.select((s) => s.isReady));
 
-    return Scaffold(
-      backgroundColor: Colors.black, // Khớp với background đen của native splash
-      body: Stack(
+    // Chặn back button Android khi overlay đang hiện — tránh user thoát app
+    // trước khi bootstrap xong.
+    return PopScope(
+      canPop: isReady,
+      child: Stack(
         children: [
-          // 1. Background Image (Sử dụng Assets từ flutter_gen)
+          widget.child,
+          IgnorePointer(
+            ignoring: isReady,
+            child: AnimatedOpacity(
+              opacity: isReady ? 0 : 1,
+              duration: const Duration(milliseconds: 250),
+              onEnd: () {
+                if (isReady && mounted) setState(() => _overlayRemoved = true);
+              },
+              // RepaintBoundary: tách paint layer overlay khỏi Home → khi fade
+              // animate opacity, Home không bị invalidate paint theo.
+              child: const RepaintBoundary(child: _SplashContent()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SplashContent extends StatelessWidget {
+  const _SplashContent();
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Material(
+      // Khớp native splash bg (#ffffff trong pubspec.yaml) — tránh chớp xám lúc hand-off.
+      color: Colors.white,
+      child: Stack(
+        children: [
           Positioned.fill(
             child: Assets.images.bgSplash.image(
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(color: Colors.black),
+              errorBuilder: (context, error, stackTrace) => Container(color: Colors.white),
             ),
           ),
-
-          // 2. App Name (Vị trí bias 0.23 -> 23% màn hình)
           Positioned(
             top: screenHeight * 0.23,
             left: 0,
             right: 0,
             child: Center(
-              child: Text(
-                t.splash.app_name,
-                style: AppTextStyles.splashAppName.copyWith(color: AppColors.brandOrange),
-              ),
+              child: Text(t.splash.app_name, style: AppTextStyles.splashAppName.copyWith(color: AppColors.brandOrange)),
             ),
           ),
-
-          // 3. Loading Message & ProgressBar (Vị trí bias 0.85 -> 85% màn hình)
           Positioned(
             top: screenHeight * 0.8,
             left: 0,
@@ -75,9 +109,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.textOnDark),
-                ),
+                CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.textOnDark)),
                 const SizedBox(height: AppDimens.gap16),
                 Text(
                   t.splash.loading,

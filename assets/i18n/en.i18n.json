@@ -5,7 +5,13 @@
     "save": "Save",
     "delete": "Delete",
     "retry": "Retry",
-    "add": "Add"
+    "add": "Add",
+    "edit": "Edit",
+    "add_note_here": "Add note here",
+    "copy": "Copy",
+    "share": "Share",
+    "lock": "Lock item",
+    "unlock": "Unlock item"
   },
   "splash": {
     "app_name": "Calculator AI",
@@ -21,12 +27,29 @@
     "max_digits_exceeded": "Maximum 15 digits per operand",
     "coming_soon": "This feature is coming soon"
   },
+  "history": {
+    "title": "History",
+    "no_history_yet": "No history yet",
+    "restore_calculation": "Restore calculation",
+    "restore_result": "Restore result",
+    "delete_history": "Delete History",
+    "msg_delete_history": "Do you want to delete all history?"
+  },
   "settings": {
     "theme_section_title": "Theme",
     "theme": {
       "classic": "Classic",
       "modern1": "Modern 1",
       "special1": "Special 1"
+    },
+    "feedback_section_title": "Feedback",
+    "sound": {
+      "title": "Key sound",
+      "subtitle": "Play a sound on each key press"
+    },
+    "vibration": {
+      "title": "Key vibration",
+      "subtitle": "Vibrate on each key press"
     }
   }
 }
