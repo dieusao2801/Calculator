@@ -1,6 +1,6 @@
 import 'package:calculator/core/router/home_tab.dart';
 import 'package:calculator/core/router/navigation_provider.dart';
-import 'package:calculator/features/history/presentation/pages/history_tab.dart';
+import 'package:calculator/features/ai_tour/presentation/pages/ai_tour_tab.dart';
 import 'package:calculator/features/calculator/presentation/pages/calculator_tab.dart';
 import 'package:calculator/features/converter/presentation/pages/converter_tab.dart';
 import 'package:calculator/features/settings/presentation/pages/settings_tab.dart';
@@ -40,6 +40,8 @@ class _HomeTabPagerState extends ConsumerState<HomeTabPager> {
   Widget build(BuildContext context) {
     // Lắng nghe state đổi từ MenuTabs → chuyển PageView.
     ref.listen<HomeTab>(navigationControllerProvider, (prev, next) {
+      // Ẩn bàn phím khi đổi tab (vd Search trong Converter, chat input AI Tutor).
+      FocusManager.instance.primaryFocus?.unfocus();
       if (_pageController.hasClients) {
         // Chỉ chuyển trang nếu vị trí hiện tại khác với vị trí được chọn
         final currentPage = _pageController.page?.round() ?? _pageController.initialPage;
@@ -56,14 +58,15 @@ class _HomeTabPagerState extends ConsumerState<HomeTabPager> {
     return PageView(
       controller: _pageController,
       onPageChanged: (index) {
-        // Cập nhật State khi user swipe (nếu index khác với state hiện tại)
+        // Cập nhật State khi user swipe (nếu index khác với state hiện tại).
+        // Việc unfocus bàn phím do `ref.listen` ở trên đảm nhiệm khi state đổi.
         final currentTab = ref.read(navigationControllerProvider);
         if (currentTab.index != index) {
           ref.read(navigationControllerProvider.notifier).setTab(HomeTab.fromIndex(index));
         }
       },
       children: const [
-        _KeepAlive(child: RepaintBoundary(child: HistoryTab())),
+        _KeepAlive(child: RepaintBoundary(child: AiTourTab())),
         _KeepAlive(child: RepaintBoundary(child: ConverterTab())),
         _KeepAlive(child: RepaintBoundary(child: CalculatorTab())),
         _KeepAlive(child: RepaintBoundary(child: SettingsTab())),

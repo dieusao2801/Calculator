@@ -12,6 +12,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true, // Đảm bảo thuộc tính này là true
       backgroundColor: Colors.transparent,
       body: HomeBackground(
         child: SafeArea(

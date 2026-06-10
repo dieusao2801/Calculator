@@ -15,4 +15,7 @@ class PrefsKeys {
   static const String soundEnabled = 'settings_sound_enabled';
   static const String vibrationEnabled = 'settings_vibration_enabled';
   static const String lastFormula = 'last_formula';
+
+  // Converter
+  static const String favoriteConverters = 'converter_favorites';
 }

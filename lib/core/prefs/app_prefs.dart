@@ -34,6 +34,10 @@ class AppPrefs {
   /// Last formula
   String get lastFormula => _prefs.getString(PrefsKeys.lastFormula) ?? '';
   Future<bool> setLastFormula(String value) => _prefs.setString(PrefsKeys.lastFormula, value);
+
+  /// Favorite Converters (List of IDs)
+  List<String> get favoriteConverters => _prefs.getStringList(PrefsKeys.favoriteConverters) ?? [];
+  Future<bool> setFavoriteConverters(List<String> ids) => _prefs.setStringList(PrefsKeys.favoriteConverters, ids);
 }
 
 /*

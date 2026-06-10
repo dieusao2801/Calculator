@@ -1,3 +1,4 @@
+import 'package:calculator/core/helpers/keyboard_provider.dart';
 import 'package:calculator/core/router/home_tab.dart';
 import 'package:calculator/core/router/navigation_provider.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
@@ -24,19 +25,23 @@ class _MenuTabsContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = context.appTheme.menu;
+    // Sử dụng provider để lắng nghe trạng thái bàn phím một cách reactive
+    final isKeyboardVisible = ref.watch(keyboardVisibilityProvider);
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: AppDimens.gap8),
-      decoration: BoxDecoration(color: theme.bg, borderRadius: BorderRadius.circular(AppDimens.gap12)),
-      child: Row(
-        children: [
-          _tab(ref, theme, HomeTab.recent, Assets.svg.icTabRecents, t.calculator.tab_ai_tour),
-          _tab(ref, theme, HomeTab.converter, Assets.svg.icTabConverter, t.calculator.tab_converter),
-          _tab(ref, theme, HomeTab.calculator, Assets.svg.icTabCalculator, t.calculator.tab_calculator),
-          _tab(ref, theme, HomeTab.settings, Assets.svg.icTabSetting, t.calculator.tab_settings),
-        ],
-      ),
-    );
+    return isKeyboardVisible
+        ? const SizedBox.shrink()
+        : Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppDimens.gap8),
+            decoration: BoxDecoration(color: theme.bg, borderRadius: BorderRadius.circular(AppDimens.gap12)),
+            child: Row(
+              children: [
+                _tab(ref, theme, HomeTab.recent, Assets.svg.icTabRecents, t.calculator.tab_ai_tour),
+                _tab(ref, theme, HomeTab.converter, Assets.svg.icTabConverter, t.calculator.tab_converter),
+                _tab(ref, theme, HomeTab.calculator, Assets.svg.icTabCalculator, t.calculator.tab_calculator),
+                _tab(ref, theme, HomeTab.settings, Assets.svg.icTabSetting, t.calculator.tab_settings),
+              ],
+            ),
+          );
   }
 
   Widget _tab(WidgetRef ref, MenuTabsGroup theme, HomeTab tab, SvgGenImage svgIcon, String label) {

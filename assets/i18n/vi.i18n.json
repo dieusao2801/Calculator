@@ -19,7 +19,7 @@
     "loading": "Đang tải dữ liệu..."
   },
   "calculator": {
-    "tab_ai_tour": "Gần đây",
+    "tab_ai_tour": "AI Tutor",
     "tab_converter": "Quy đổi",
     "tab_calculator": "Máy tính",
     "tab_settings": "Cài đặt",
@@ -35,6 +35,46 @@
     "restore_result": "Khôi phục kết quả",
     "delete_history": "Xóa lịch sử",
     "msg_delete_history": "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?"
+  },
+  "ai_tutor": {
+    "top_bar_title": "AI Tutor",
+    "empty_heading": "Tôi có thể giúp gì cho bạn?",
+    "disclaimer_label": "Lưu ý về AI",
+    "chat_placeholder": "Hỏi bất cứ điều gì"
+  },
+  "converter": {
+    "search_placeholder": "Search",
+    "no_results": "Không có kết quả phù hợp",
+    "section_favorite": "Favorites",
+    "section_convert": "Convert",
+    "section_consume": "Consume",
+    "section_money": "Money",
+    "section_health": "Health",
+    "item_subtitle_convert": "Convert",
+    "manager_favorites": "Manager Favorites",
+    "items": {
+      "unit_converter": "Unit Converter",
+      "hexadecimal_calculator": "Hexadecimal Calculator",
+      "world_time_converter": "World time Converter",
+      "date_difference": "Date Difference",
+      "gpa_calculator": "GPA Calculator",
+      "size_converter": "Size Converter",
+      "time_difference": "Time Difference",
+      "age_calculator": "Age Calculator",
+      "bmi_calculator": "BMI Calculator",
+      "calorie_calculator": "Calorie Calculator",
+      "fuel_cost_calculator": "Fuel Cost Calculator",
+      "percentage_calculator": "Percentage Calculator",
+      "discount_calculator": "Discount Calculator",
+      "tip_calculator": "Tip Calculator",
+      "unit_price_calculator": "Unit Price Calculator",
+      "sales_tax_calculator": "Sales Tax Calculator",
+      "currency_converter": "Currency Converter",
+      "loan_calculator": "Loan Calculator",
+      "savings_calculator": "Savings Calculator",
+      "ovulation_calculator": "Ovulation Calculator",
+      "health_calculator": "Health Calculator"
+    }
   },
   "settings": {
     "theme_section_title": "Giao diện",
