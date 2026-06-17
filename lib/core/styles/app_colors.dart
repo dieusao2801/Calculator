@@ -61,4 +61,7 @@ class AppColors {
   // ---------- Metallic Background ----------
   static const Color metallicLight = Color(0xFFE0E0E0);
   static const Color metallicDark = Color(0xFFBDBDBD);
+
+  // ---------- Others ----------
+  static const Color charcoalGray = Color(0xFF393939);
 }

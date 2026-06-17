@@ -1,5 +1,6 @@
 import 'package:calculator/core/log/app_log.dart';
 import 'package:calculator/features/calculator/presentation/providers/calculator_controller.dart';
+import 'package:calculator/features/converter/currency/data/providers/currency_repository_providers.dart';
 import 'package:equatable/equatable.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -46,10 +47,15 @@ class SplashController extends _$SplashController {
   }
 
   Future<void> _warmUp() async {
+    // Kick off currency init fire-and-forget — splash KHÔNG block do currency.
+    // Controller `build()` ở màn Currency sẽ `await ref.watch(...future)`:
+    // đang load → đợi resolve, đã xong → resolve ngay, chưa kick off → bắt đầu.
+    ref.read(currencyInitializerProvider);
+
     try {
       await ref.read(calculatorControllerProvider.notifier).init().timeout(warmUpTimeout);
     } catch (e) {
-      AppLog.e('SplashController warmup calculator: $e');
+      AppLog.e('SplashController warmup: $e');
     }
   }
 }

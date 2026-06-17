@@ -8,6 +8,8 @@ class PlatformInfo {
 
   static int? _androidSdkInt;
 
+  static int? get androidSdkInt => _androidSdkInt;
+
   static Future<void> init() async {
     if (Platform.isAndroid) {
       final info = await DeviceInfoPlugin().androidInfo;

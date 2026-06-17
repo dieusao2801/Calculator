@@ -76,6 +76,36 @@
       "health_calculator": "Health Calculator"
     }
   },
+  "currency": {
+    "title": "Currency Converter",
+    "mode_simple": "Simple Mode",
+    "mode_advanced": "Advanced Mode",
+    "label_from": "From Currency",
+    "label_to": "To Currency",
+    "label_advanced": "Select Currency ${index}",
+    "rate_as_of": "Rate as of ${time}",
+    "rate_line": "* 1 ${from} = ${rate} ${to}",
+    "update_rate_title": "Update exchange rate",
+    "update_rate_loading": "Updating exchange rate...",
+    "update_rate_failed": "Cannot update exchange rate",
+    "history_title": "Conversion history",
+    "history_empty": "No history yet",
+    "history_label": "[History]",
+    "menu": {
+      "add_shortcut": "Add Shortcut",
+      "favorite": "Favorite",
+      "unfavorite": "UnFavorite",
+      "refresh": "Refresh",
+      "simple_mode": "Simple Mode",
+      "advanced_mode": "Advanced Mode",
+      "history": "History",
+      "share": "Share",
+      "help": "Help",
+      "feedback": "Feedback",
+      "caution": "Caution",
+      "settings": "Settings"
+    }
+  },
   "settings": {
     "theme_section_title": "Theme",
     "theme": {

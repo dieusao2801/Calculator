@@ -96,6 +96,11 @@ Tách 3 lớp rõ ràng — khi sửa cần giữ ranh giới này:
 - Khai báo routes trong `lib/core/router/app_router.dart` (`@AutoRouterConfig(replaceInRouteName: 'Page,Route')`).
 - Mọi page mới phải có `@RoutePage()` rồi chạy `build_runner` để sinh `app_router.gr.dart`.
 - Initial route: `HomeRoute` (4 tab). Splash **không** là route — xem §4.9.
+- **Quy ước navigation**: dùng `auto_route` cho mọi hành vi điều hướng — KHÔNG dùng `Navigator.of(context).push/pop` trực tiếp.
+  - Push: `context.router.push(SomeRoute())` / `context.pushRoute(...)`.
+  - Replace: `context.router.replace(...)`.
+  - Pop route hoặc pop dialog/bottom sheet: `context.maybePop([result])` (không throw nếu không có gì để pop). Áp dụng cho cả việc dismiss dialog do `showDialog`/`AppBaseDialog.show` đã push lên — KHÔNG dùng `Navigator.of(context, rootNavigator: true).pop()`.
+  - Trong action button của dialog (xem `confirm_dialog.dart`, `info_dialog.dart`): luôn `context.maybePop(value)` để trả kết quả về callsite.
 
 ### 4.9 Splash (overlay-based)
 

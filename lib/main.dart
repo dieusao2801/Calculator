@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:calculator/core/helpers/platform_info.dart';
 import 'package:calculator/core/prefs/shared_preferences_provider.dart';
 import 'package:calculator/core/router/app_router.dart';
 import 'package:calculator/core/theme/app_theme.dart';

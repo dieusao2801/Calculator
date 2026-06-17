@@ -69,6 +69,8 @@ class CalcButton extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AppDimens.gap4),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: _disabled
               ? null
@@ -76,10 +78,12 @@ class CalcButton extends StatelessWidget {
                   KeypadFeedback.tap();
                   onPressed!();
                 },
-          borderRadius: BorderRadius.circular(AppDimens.gap10),
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimens.gap4),
-            child: Center(child: _buildContent(fg)),
+          borderRadius: BorderRadius.circular(AppDimens.gap4),
+          child: SizedBox.expand(
+            child: Padding(
+              padding: const EdgeInsets.all(AppDimens.gap4),
+              child: Center(child: _buildContent(fg)),
+            ),
           ),
         ),
       ),

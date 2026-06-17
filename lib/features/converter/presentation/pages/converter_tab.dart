@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:calculator/core/helpers/app_toast.dart';
+import 'package:calculator/core/router/app_router.gr.dart';
 import 'package:calculator/core/styles/app_dimens.dart';
 import 'package:calculator/features/converter/domain/converter_catalog.dart';
 import 'package:calculator/features/converter/domain/converter_item.dart';
@@ -55,16 +57,16 @@ class _ConverterBody extends ConsumerWidget {
         SliverToBoxAdapter(
           child: ConverterSectionWidget(title: t.converter.section_favorite, child: _buildFavoritesGrid(context, favorites)),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: AppDimens.gap8)),
+        const SliverToBoxAdapter(child: SizedBox(height: AppDimens.gap16)),
         // Other Sections
         for (final section in sections) ...[
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.only(top: AppDimens.gap8, bottom: AppDimens.gap8),
+              padding: const EdgeInsets.only(top: AppDimens.gap12, bottom: AppDimens.gap12),
               child: Text(
                 section.title.toUpperCase(),
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: ConverterColors.title,
                   letterSpacing: 0.5,
@@ -74,9 +76,10 @@ class _ConverterBody extends ConsumerWidget {
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
+              final item = section.items[index];
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppDimens.gap12),
-                child: ConverterListItem(item: section.items[index], onTap: () => _comingSoon(context)),
+                child: ConverterListItem(item: item, onTap: () => _onItemTap(context, item)),
               );
             }, childCount: section.items.length),
           ),
@@ -101,7 +104,10 @@ class _ConverterBody extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: AppDimens.gap12),
       itemCount: filtered.length,
       separatorBuilder: (_, _) => const SizedBox(height: AppDimens.gap12),
-      itemBuilder: (context, index) => ConverterListItem(item: filtered[index], onTap: () => _comingSoon(context)),
+      itemBuilder: (context, index) {
+        final item = filtered[index];
+        return ConverterListItem(item: item, onTap: () => _onItemTap(context, item));
+      },
     );
   }
 
@@ -110,14 +116,14 @@ class _ConverterBody extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         const int columns = 4;
-        const double gap = AppDimens.gap24;
+        const double gap = AppDimens.gap12;
         final itemWidth = (constraints.maxWidth - (columns - 1) * gap) / columns;
 
         return Wrap(
           spacing: gap,
-          runSpacing: AppDimens.gap8,
+          runSpacing: AppDimens.gap16,
           children: items
-              .map((item) => ConverterGridItem(item: item, width: itemWidth, onTap: () => _comingSoon(context)))
+              .map((item) => ConverterGridItem(item: item, width: itemWidth, onTap: () => _onItemTap(context, item)))
               .toList(),
         );
       },
@@ -125,6 +131,10 @@ class _ConverterBody extends ConsumerWidget {
   }
 }
 
-void _comingSoon(BuildContext context) {
-  AppToast.show(context, t.calculator.coming_soon);
+void _onItemTap(BuildContext context, ConverterItem item) {
+  if (item.contentId == 'currency_converter') {
+    context.pushRoute(const CurrencyConverterRoute());
+  } else {
+    AppToast.show(context, t.calculator.coming_soon);
+  }
 }

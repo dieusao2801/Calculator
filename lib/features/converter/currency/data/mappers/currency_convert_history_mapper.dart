@@ -44,4 +44,44 @@ class CurrencyConvertHistoryMapper {
       createdTime: Value(data.createdTime),
     );
   }
+
+  static CurrencyConvertHistory fromMap(Map<String, dynamic> map) {
+    return CurrencyConvertHistory(
+      id: map['id'] as int?,
+      ratesLastUpdated: DateTime.parse(map['ratesLastUpdated'] as String),
+      currencyCode1: map['currencyCode1'] as String,
+      exchangeRate1: map['exchangeRate1'] as String,
+      amount1: map['amount1'] as String,
+      currencyCode2: map['currencyCode2'] as String,
+      exchangeRate2: map['exchangeRate2'] as String,
+      amount2: map['amount2'] as String,
+      currencyCode3: map['currencyCode3'] as String?,
+      exchangeRate3: map['exchangeRate3'] as String?,
+      amount3: map['amount3'] as String?,
+      currencyCode4: map['currencyCode4'] as String?,
+      exchangeRate4: map['exchangeRate4'] as String?,
+      amount4: map['amount4'] as String?,
+      createdTime: DateTime.parse(map['createdTime'] as String),
+    );
+  }
+
+  static Map<String, dynamic> toMap(CurrencyConvertHistory entity) {
+    return {
+      'id': entity.id,
+      'ratesLastUpdated': entity.ratesLastUpdated.toIso8601String(),
+      'currencyCode1': entity.currencyCode1,
+      'exchangeRate1': entity.exchangeRate1,
+      'amount1': entity.amount1,
+      'currencyCode2': entity.currencyCode2,
+      'exchangeRate2': entity.exchangeRate2,
+      'amount2': entity.amount2,
+      'currencyCode3': entity.currencyCode3,
+      'exchangeRate3': entity.exchangeRate3,
+      'amount3': entity.amount3,
+      'currencyCode4': entity.currencyCode4,
+      'exchangeRate4': entity.exchangeRate4,
+      'amount4': entity.amount4,
+      'createdTime': entity.createdTime.toIso8601String(),
+    };
+  }
 }

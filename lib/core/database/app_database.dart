@@ -1,3 +1,4 @@
+import 'package:calculator/features/converter/currency/data/entities/currency_rate_table.dart';
 import 'package:calculator/features/history/data/entities/calculation_history_table.dart';
 import 'package:calculator/features/history/data/entities/currency_convert_history_table.dart';
 import 'package:calculator/features/history/data/entities/time_zone_alternative_table.dart';
@@ -8,12 +9,29 @@ import '../../features/history/data/entities/percentage_history_table.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [CalculationHistoryTable, CurrencyConvertHistoryTable, PercentageHistoryTable, TimeZoneAlternativeTable])
+@DriftDatabase(
+  tables: [
+    CalculationHistoryTable,
+    CurrencyConvertHistoryTable,
+    PercentageHistoryTable,
+    TimeZoneAlternativeTable,
+    CurrencyRateTable,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(currencyRateTable);
+      }
+    },
+  );
 
   static QueryExecutor _openConnection() {
     return driftDatabase(name: 'calculator_db');
